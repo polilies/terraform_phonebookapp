@@ -27,10 +27,6 @@ data "aws_ami" "tf_ami" {
   }
 }
 
-variable "ec2_type" {
-  default = "t2.micro"
-}
-
 #variable "MyDBURI" {}
 
 /*
@@ -75,7 +71,7 @@ locals {
   keyname = "nvirginia"
 }
 
-resource "aws_instance" "tf-ec2" {
+/* resource "aws_instance" "tf-ec2" {
   ami             = data.aws_ami.tf_ami.id
   instance_type   = var.ec2_type
   key_name        = local.keyname
@@ -87,17 +83,30 @@ resource "aws_instance" "tf-ec2" {
   tags = {
     Name = "${local.mytag}-this is from my-ami"
   }
-
-  /* network_interface {
-    network_interface_id = aws_network_interface.foo.id
-    device_index         = 0
-  } */
   user_data  = file("user.sh")
   depends_on = [aws_internet_gateway.gw]
-}
+} */
 
 output "public_ip" {
   value = aws_instance.tf-ec2.public_ip
 }
 
+resource "aws_autoscaling_group" "asg" {
+  name = "phonebook_asg"
+  desired_capacity = 2
+  min_size = 2
+  max_size = 3
+  termination_policies = "OldestInstance"
+  launch_template {
+    id = "???"
+    version = "???"
+  }
+}
 
+resource "aws_launch_template" "lt" {
+  name = "phonebook_lt"
+  instance_type = var.ec2_type
+  image_id = data.aws_ami.tf_ami  
+  ebs_optimized = true
+  
+}

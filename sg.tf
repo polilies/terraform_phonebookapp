@@ -1,26 +1,19 @@
-variable "ingress-ports" {
-  type        = list(number)
-  description = "docker-instance-sec-gr-inbound-rules"
-  default     = [22, 80, 8080]
-}
-
-
 resource "aws_security_group" "web" {
   name        = "allow_http"
   description = "Allow TLS inbound traffic"
   vpc_id      = aws_vpc.phone.id
 
   dynamic "ingress" {
-    for_each = var.ingress-ports
+    count = lenght(var.ingress-ports)
     #iterator = port
     content {
-      from_port   = ingress.value
-      to_port     = ingress.value
+      from_port   = var.ingree-ports[count.index]
+      to_port     = var.ingree-ports[count.index]
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_blocks = var.ingress-cidrs[count.index]
     }
   }
- /*
+  /*
     ingress {
     description = "Http from VPC"
     from_port   = 80
